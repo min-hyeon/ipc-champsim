@@ -334,7 +334,6 @@ void O3_CPU::read_from_trace()
 		  }
 
 		total_branch_types[arch_instr.branch_type]++;
-        /*--modified*/fp_branch_type << "[" << "O3_CPU" << "] " << "(" << __func__ << ")" << " cpu: " << cpu << ", v_addr: " << hex << arch_instr.ip << dec << ", branch_type: " << +unsigned(arch_instr.branch_type) << endl;
 		
 		if((arch_instr.is_branch == 1) && (arch_instr.branch_taken == 1))
 		  {
@@ -480,6 +479,9 @@ uint32_t O3_CPU::add_to_ifetch_buffer(ooo_model_instr *arch_instr)
   IFETCH_BUFFER.entry[index].translated = COMPLETED;
   IFETCH_BUFFER.entry[index].fetched = 0;
   // end magic
+  /*--modified*/if(warmup_complete[cpu])
+  /*--modified*/{fp_branch_type << "[" << "O3_CPU" << "] " << "(" << __func__ << ")" << " cpu: " << cpu << ", v_addr: " << hex << IFETCH_BUFFER.entry[index].ip;
+  /*--modified*/fp_branch_type << ", p_addr: " << IFETCH_BUFFER.entry[index].instruction_pa << dec << ", branch_type: " << +unsigned(IFETCH_BUFFER.entry[index].branch_type) << endl;}
   
   IFETCH_BUFFER.occupancy++;
   IFETCH_BUFFER.tail++;

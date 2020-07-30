@@ -27,6 +27,9 @@ TRACE_TYPE=("client" "server" "spec")
 if [ -z ./sim ] || [ ! -d ./sim ] ; then
 	mkdir -p ./sim
 fi
+if [ -z ./debug ] || [ ! -d ./debug ] ; then
+	mkdir -p ./debug
+fi
 if [ -z ${TRACE_DIR} ] || [ ! -d ${TRACE_DIR} ] ; then
 	mkdir -p ${TRACE_DIR}
 fi
