@@ -1169,13 +1169,6 @@ int CACHE::check_hit(PACKET *packet)
             break;
         }
     }
-
-    /*--modifiedif (warmup_complete[packet->cpu] && (NAME == "L1I") && match_way == -1) {
-    --modified  fp_check_hit << "[" << NAME << "] " << "(" << __func__ << ")" << " match_way: " << match_way << ", instr_id: " << packet->instr_id << ", type: " << +unsigned(packet->type) << hex << ", addr: " << packet->address;
-    --modified  fp_check_hit << ", full_addr: " << packet->full_addr << dec;
-    --modified  fp_check_hit << ", event: " << packet->event_cycle << ", cycle: " << current_core_cycle[cpu] << endl;
-    --modified}*/
-
     return match_way;
 }
 
