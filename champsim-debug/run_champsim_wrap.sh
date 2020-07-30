@@ -114,7 +114,9 @@ do
 					mv $PWD/results_${N_SIM}/${TRACE}.champsimtrace.xz-${BINARY}${OPTION}.txt ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats
 					for DEBUG in ./debug/*
 					do
-						mv ${DEBUG} ${DEBUG_DIR}/${BINARY}/${TYPE}
+						DEBUG_BASENAME=`basename ${DEBUG} .debug`
+						cp ${DEBUG} ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.${DEBUG_BASENAME}
+						rm -f ${DEBUG}
 					done
 				fi
 			fi
