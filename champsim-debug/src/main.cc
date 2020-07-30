@@ -1057,7 +1057,7 @@ int main(int argc, char** argv)
     print_branch_stats();
 #endif
 
-    /*--modified*/std::ofstream json("champsim-result.json");
+    /*--modified*/std::ofstream json("champsim-stats.json");
     /*--modified*/boost::property_tree::write_json(json, pt);
     /*--modified*/json.close();
     return 0;
