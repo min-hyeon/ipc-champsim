@@ -24,9 +24,6 @@ EXPER_DIR=$PWD/sim/experiment
 STATS_DIR=$PWD/sim/stats
 DEBUG_DIR=$PWD/sim/debug
 
-if [ -z $PWD/debug ] || [ ! -d $PWD/debug ] ; then
-	mkdir -p $PWD/debug
-fi
 if [ -z $PWD/sim ] || [ ! -d $PWD/sim ] ; then
 	mkdir -p $PWD/sim
 fi
@@ -45,6 +42,9 @@ fi
 if [ -z ${DEBUG_DIR} ] || [ ! -d ${DEBUG_DIR} ] ; then
 	mkdir -p ${DEBUG_DIR}
 fi
+
+make clean
+rm -r $PWD/bin
 
 printf "\n[Build control group; ${CONTR_DIR}]\n"
 printf "	Build executable simulation FILE with each l1i prefetcher...\n"
@@ -81,6 +81,7 @@ do
 done
 
 printf "\n[Simulate each binaries from ${PWD}/bin/ on traces in ${TRACE_DIR}]\n"
+mkdir -p $PWD/debug
 for BINARY in $PWD/bin/*
 do
 	[ -f "$BINARY" ] || continue
@@ -103,8 +104,8 @@ do
 				if [ ! -d ${STATS_DIR}/${BINARY}/${TYPE} ] ; then
 					mkdir -p ${STATS_DIR}/${BINARY}/${TYPE}
 				fi
-				if [ ! -d ${DEBUG_DIR}/${BINARY}/${TYPE} ] ; then
-					mkdir -p ${DEBUG_DIR}/${BINARY}/${TYPE}
+				if [ ! -d ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM} ] ; then
+					mkdir -p ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}
 				fi
 				if [ -f ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats ] ; then
 					printf "	./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE} (Skipped)\r"
@@ -112,11 +113,9 @@ do
 					printf "	./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}\r"
 					bash $PWD/run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}.champsimtrace.xz
 					mv $PWD/results_${N_SIM}/${TRACE}.champsimtrace.xz-${BINARY}${OPTION}.txt ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats
-					for DEBUG in ./debug/*
+					for DEBUG in $PWD/debug/*
 					do
-						DEBUG_BASENAME=`basename ${DEBUG} .debug`
-						cp ${DEBUG} ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.${DEBUG_BASENAME}
-						rm -f ${DEBUG}
+						mv ${DEBUG} ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}
 					done
 				fi
 			fi
@@ -130,6 +129,7 @@ do
 	echo ""
 done
 rm -r $PWD/results_${N_SIM}
+rm -r $PWD/debug
 
 :<<'END'
 printf "\n[All stats are available at ./sim/stats/[BINARY]/]\n"
