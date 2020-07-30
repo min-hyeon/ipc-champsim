@@ -20,13 +20,12 @@
 #include <iomanip>
 
 // USEFUL MACROS
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 #define SANITY_CHECK
 #define LLC_BYPASS
 #define DRC_BYPASS
 #define NO_CRC2_COMPILE
 
-/*--modified*/#define DEBUG_PRINT
 #ifdef DEBUG_PRINT
 #define DP(x) x
 #else
