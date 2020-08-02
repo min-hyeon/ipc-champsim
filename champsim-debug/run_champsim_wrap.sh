@@ -18,7 +18,6 @@ OPTION=${9}
 
 TRACE_DIR=$PWD/traces
 TRACE_TYPE=("client" "server" "spec")
-TRACE_NUM=$(ls -1 ${TRACE_DIR} | wc -l)
 CONTR_DIR=$PWD/sim/control
 EXPER_DIR=$PWD/sim/experiment
 STATS_DIR=$PWD/sim/stats
@@ -45,9 +44,6 @@ fi
 if [ -z ${DEBUG_DIR} ] || [ ! -d ${DEBUG_DIR} ] ; then
 	mkdir -p ${DEBUG_DIR}
 fi
-
-make clean
-rm -r $PWD/bin
 
 printf "\n[Build control group; ${CONTR_DIR}]\n"
 printf "	Build executable simulation FILE with each l1i prefetcher...\n"
@@ -89,18 +85,10 @@ for BINARY in $PWD/bin/*
 do
 	[ -f "$BINARY" ] || continue
 	BINARY=`basename ${BINARY}`
-	COUNT=1
 	printf "	Simulating ${BINARY}...\n"
 	for TRACE in ${TRACE_DIR}/*
 	do
 		TRACE=`basename ${TRACE} .champsimtrace.xz`
-		PROCC=`expr ${COUNT} \* 50 / ${TRACE_NUM}`
-		printf "		|"
-		printf "%0.s=" $(seq 1 ${PROCC})
-		if [ ${PROCC} -lt 50 ] ; then
-			printf "%0.s " $(seq 0 `expr 49 - ${PROCC}`)
-		fi
-		printf "| ${COUNT} / ${TRACE_NUM}"
 		for TYPE in ${TRACE_TYPE[@]}
 		do
 			if [[ ${TRACE} == ${TYPE}* ]] ; then
@@ -111,11 +99,12 @@ do
 					mkdir -p ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}
 				fi
 				if [ -f ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats ] ; then
-					printf "	./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE} (Skipped)\r"
+					mkdir -p $PWD/results_${N_SIM}
+					printf "		./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE} (Skipped)\n"
 				else
-					printf "	./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}\r"
+					printf "		./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}\n"
 					bash $PWD/run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}.champsimtrace.xz
-					mv $PWD/results_${N_SIM}/${TRACE}.champsimtrace.xz-${BINARY}${OPTION}.txt ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats
+					mv $PWD/champsim-stats.json ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats
 					for DEBUG in $PWD/debug/*
 					do
 						mv ${DEBUG} ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}
@@ -123,52 +112,7 @@ do
 				fi
 			fi
 		done
-		COUNT=`expr ${COUNT} + 1`
 	done
-	printf "		|"
-	printf "%0.s=" $(seq 1 50)
-	printf "| ${TRACE_NUM} / ${TRACE_NUM}	simulated all traces"
-	printf "%0.s " $(seq 1 100)
-	echo ""
 done
 rm -r $PWD/results_${N_SIM}
 rm -r $PWD/debug
-
-:<<'END'
-printf "\n[All stats are available at ./sim/stats/[BINARY]/]\n"
-for BINARY in ${STATS_DIR}/*
-do
-	[ -d "$BINARY" ] || continue
-	printf "	${BINARY}/\n"
-	BINARY=`basename $BINARY`
-	for TRACE_TYPE in ${STATS_DIR}/${BINARY}/*
-	do
-		TRACE_TYPE=`basename $TRACE_TYPE`
-		printf "		${TRACE_TYPE}\n"
-		for STATS in ${STATS_DIR}/${BINARY}/${TRACE_TYPE}/*
-		do
-			STATS=`basename $STATS`
-			printf "			${STATS}\n"
-		done
-	done
-done
-
-printf "\n[All debug results are available at ./sim/debug/[BINARY]/]\n"
-for BINARY in ${DEBUG_DIR}/*
-do
-	[ -d "$BINARY" ] || continue
-	printf "	${BINARY}/\n"
-	BINARY=`basename $BINARY`
-	for TRACE_TYPE in ${DEBUG_DIR}/${BINARY}/*
-	do
-		TRACE_TYPE=`basename $TRACE_TYPE`
-		printf "        "
-		printf "		${TRACE_TYPE}\n"
-		for DEBUG in ${DEBUG_DIR}/${BINARY}/${TRACE_TYPE}/*
-		do
-			DEBUG=`basename $DEBUG`
-			printf "			${DEBUG}\n"
-		done
-	done
-done
-END
