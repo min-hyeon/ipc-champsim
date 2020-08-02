@@ -156,6 +156,7 @@ void CACHE::handle_fill()
             // COLLECT STATS
             sim_miss[fill_cpu][MSHR.entry[mshr_index].type]++;
             sim_access[fill_cpu][MSHR.entry[mshr_index].type]++;
+            /*--modified*/if(warmup_complete[fill_cpu]&&cache_type == IS_L1I) {fp_check_hit << hex << MSHR.entry[mshr_index].full_addr<<endl;}
 
             fill_cache(set, way, &MSHR.entry[mshr_index]);
 
@@ -486,6 +487,8 @@ void CACHE::handle_writeback()
                     sim_miss[writeback_cpu][WQ.entry[index].type]++;
                     sim_access[writeback_cpu][WQ.entry[index].type]++;
 
+                    /*--modified*/ if(warmup_complete[writeback_cpu]&&cache_type == IS_L1I) {fp_check_hit << hex << WQ.entry[index].full_addr<<endl;}
+
                     fill_cache(set, way, &WQ.entry[index]);
 
                     // mark dirty
@@ -643,7 +646,6 @@ void CACHE::handle_read()
                 cout << " instr_id: " << RQ.entry[index].instr_id << " address: " << hex << RQ.entry[index].address;
                 cout << " full_addr: " << RQ.entry[index].full_addr << dec;
                 cout << " cycle: " << RQ.entry[index].event_cycle << endl; });
-
                 // check mshr
                 uint8_t miss_handled = 1;
                 int mshr_index = check_mshr(&RQ.entry[index]);
@@ -1167,13 +1169,6 @@ int CACHE::check_hit(PACKET *packet)
             break;
         }
     }
-
-    /*--modified*/if (warmup_complete[packet->cpu]) {
-    /*--modified*/  fp_check_hit << "[" << NAME << "] " << "(" << __func__ << ")" << " match_way: " << match_way << ", instr_id: " << packet->instr_id << ", type: " << +unsigned(packet->type) << hex << ", addr: " << packet->address;
-    /*--modified*/  fp_check_hit << ", full_addr: " << packet->full_addr << dec;
-    /*--modified*/  fp_check_hit << ", event: " << packet->event_cycle << ", cycle: " << current_core_cycle[cpu] << endl;
-    /*--modified*/}
-
     return match_way;
 }
 
