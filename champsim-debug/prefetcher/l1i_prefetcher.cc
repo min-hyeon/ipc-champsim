@@ -2,7 +2,7 @@
 
 void O3_CPU::l1i_prefetcher_initialize() 
 {
-  cout << "CPU " << cpu << " L1I next line prefetcher" << endl;
+
 }
 
 void O3_CPU::l1i_prefetcher_branch_operate(uint64_t ip, uint8_t branch_type, uint64_t branch_target)

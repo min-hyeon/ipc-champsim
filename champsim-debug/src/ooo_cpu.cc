@@ -4,7 +4,7 @@
 /*--modified*/#include <fstream>
 /*--modified*/extern std::ofstream fp_branch_type;
 /*--modified*/extern std::ofstream fp_retire_rob;
-/*--modified*/extern std::ofstream fp_prefetch_code_line;
+/*--modified*/extern std::ofstream fp_l1i_prefetch_code_line;
 
 // out-of-order core
 O3_CPU ooo_cpu[NUM_CPUS]; 
@@ -640,7 +640,7 @@ void O3_CPU::fetch_instruction()
 	  fetch_packet.address = IFETCH_BUFFER.entry[index].instruction_pa >> 6;
 	  fetch_packet.instruction_pa = IFETCH_BUFFER.entry[index].instruction_pa;
 	  fetch_packet.full_addr = IFETCH_BUFFER.entry[index].instruction_pa;
-	  fetch_packet.instr_id = 0;
+	  fetch_packet.instr_id = IFETCH_BUFFER.entry[index].instr_id;
 	  fetch_packet.rob_index = 0;
 	  fetch_packet.producer = 0;
 	  fetch_packet.ip = IFETCH_BUFFER.entry[index].ip;
@@ -816,8 +816,8 @@ int O3_CPU::prefetch_code_line(uint64_t pf_v_addr)
     }
 
     L1I.pf_requested++;
-
-    /*--modified*/fp_prefetch_code_line << "[" << "O3_CPU" << "] " << "(" << __func__ << ")" << " cpu: " << cpu << ", pf_v_addr: " << hex << pf_v_addr << dec;
+    /*--modified*/fp_l1i_prefetch_code_line << "[O3_CPU] (prefetch_code_line)";
+    /*--modified*/fp_l1i_prefetch_code_line << " pf_v_addr: " << hex << pf_v_addr << endl;
 
     if (L1I.PQ.occupancy < L1I.PQ.SIZE)
     {
@@ -842,28 +842,8 @@ int O3_CPU::prefetch_code_line(uint64_t pf_v_addr)
         L1I.add_pq(&pf_packet);    
         L1I.pf_issued++;
 
-        /*--modified*/fp_prefetch_code_line << ", requested-and-issued: L1I.PQ.occupancy < L1I.PQ.SIZE";
-        /*--modified*/fp_prefetch_code_line << ", pf_pa: " << pf_pa;
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.address: " << pf_packet.address;
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.full_addr: " << "=pf_pa";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.ip: " << "=pf_v_addr";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.event_cycle: " << pf_packet.event_cycle;
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_requested: " << L1I.pf_requested;
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_issued: " << L1I.pf_issued << endl;
-
         return 1;
     }
-    /*--modified*/else {
-        /*--modified*/uint64_t pf_pa = (va_to_pa(cpu, 0, pf_v_addr, pf_v_addr>>LOG2_PAGE_SIZE, 1) & (~((1 << LOG2_PAGE_SIZE) - 1))) | (pf_v_addr & ((1 << LOG2_PAGE_SIZE) - 1));
-        /*--modified*/fp_prefetch_code_line << ", requested-but-not-issued: L1I.PQ.occupancy >= L1I.PQ.SIZE";
-        /*--modified*/fp_prefetch_code_line << ", pf_pa: " << pf_pa;
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.address: " << (pf_pa >> LOG2_BLOCK_SIZE);
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.full_addr: " << "=pf_pa";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.ip: " << "=pf_v_addr";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.event_cycle: " << current_core_cycle[cpu];
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_requested: " << L1I.pf_requested;
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_issued: " << L1I.pf_issued << endl;
-    /*--modified*/}
   
     return 0;
 }
