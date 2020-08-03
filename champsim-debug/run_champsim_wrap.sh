@@ -105,6 +105,7 @@ do
 					printf "		./run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}\n"
 					bash $PWD/run_champsim_nosuffix.sh ${BINARY} ${N_WARM} ${N_SIM} ${TRACE}.champsimtrace.xz
 					mv $PWD/champsim-stats.json ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats
+					mv $PWD/results_${N_SIM}/${TRACE}.champsimtrace.xz-${BINARY}${OPTION}.txt ${STATS_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}.stats2
 					for DEBUG in $PWD/debug/*
 					do
 						mv ${DEBUG} ${DEBUG_DIR}/${BINARY}/${TYPE}/${BINARY}-${TRACE}-${N_SIM}

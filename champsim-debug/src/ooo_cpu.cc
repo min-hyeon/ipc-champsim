@@ -2,7 +2,6 @@
 #include "set.h"
 
 /*--modified*/#include <fstream>
-/*--modified*/extern std::ofstream fp_branch_type;
 /*--modified*/extern std::ofstream fp_retire_rob;
 /*--modified*/extern std::ofstream fp_prefetch_code_line;
 
@@ -396,8 +395,6 @@ void O3_CPU::read_from_trace()
             }
         }
     }
-    /*--modified*/
-    //fprintf(fp, "%u\n", num_reads);
     
     //instrs_to_fetch_this_cycle = num_reads;
 }
@@ -479,10 +476,7 @@ uint32_t O3_CPU::add_to_ifetch_buffer(ooo_model_instr *arch_instr)
   IFETCH_BUFFER.entry[index].translated = COMPLETED;
   IFETCH_BUFFER.entry[index].fetched = 0;
   // end magic
-  /*--modified*/if(warmup_complete[cpu])
-  /*--modified*/{fp_branch_type << "[" << "O3_CPU" << "] " << "(" << __func__ << ")" << " cpu: " << cpu << ", v_addr: " << hex << IFETCH_BUFFER.entry[index].ip;
-  /*--modified*/fp_branch_type << ", p_addr: " << IFETCH_BUFFER.entry[index].instruction_pa << dec << ", branch_type: " << +unsigned(IFETCH_BUFFER.entry[index].branch_type) << endl;}
-  
+ 
   IFETCH_BUFFER.occupancy++;
   IFETCH_BUFFER.tail++;
 
@@ -602,7 +596,7 @@ void O3_CPU::fetch_instruction()
 	  else
 	    trace_packet.address = IFETCH_BUFFER.entry[index].ip >> LOG2_PAGE_SIZE;
 	  trace_packet.full_addr = IFETCH_BUFFER.entry[index].ip;
-	  trace_packet.instr_id = 0;
+	  trace_packet.instr_id = IFETCH_BUFFER.entry[index].instr_id;
 	  trace_packet.rob_index = i;
 	  trace_packet.producer = 0; // TODO: check if this guy gets used or not
 	  trace_packet.ip = IFETCH_BUFFER.entry[index].ip;
@@ -640,7 +634,7 @@ void O3_CPU::fetch_instruction()
 	  fetch_packet.address = IFETCH_BUFFER.entry[index].instruction_pa >> 6;
 	  fetch_packet.instruction_pa = IFETCH_BUFFER.entry[index].instruction_pa;
 	  fetch_packet.full_addr = IFETCH_BUFFER.entry[index].instruction_pa;
-	  fetch_packet.instr_id = 0;
+	  fetch_packet.instr_id = IFETCH_BUFFER.entry[index].instr_id;
 	  fetch_packet.rob_index = 0;
 	  fetch_packet.producer = 0;
 	  fetch_packet.ip = IFETCH_BUFFER.entry[index].ip;
@@ -2332,11 +2326,9 @@ void O3_CPU::retire_rob()
         cout << "[ROB] " << __func__ << " instr_id: " << ROB.entry[ROB.head].instr_id << " is retired" << endl; });
 
         /*--modified*/if (warmup_complete[cpu]) {
-        /*--modified*/    fp_retire_rob << "[ROB] (retired)" << " cpu: " << cpu << ", instruction_id: " << ROB.entry[ROB.head].instr_id;
-        /*--modified*/    fp_retire_rob << ", ip: " << hex << ROB.entry[ROB.head].ip << dec;
-        /*--modified*/    fp_retire_rob << ", head: " << ROB.head << ", tail: " << ROB.tail << ", occupancy: " << ROB.occupancy;
-        /*--modified*/    fp_retire_rob << ", event: " << ROB.entry[ROB.head].event_cycle << ", current: " << current_core_cycle[cpu] << endl;
-        /*--modified*/}
+        /*--modified*/    fp_retire_rob << "[ROB] (retire_rob) id: " << ROB.entry[ROB.head].instr_id;
+        /*--modified*/    fp_retire_rob << ", v_addr: 0x" << hex << ROB.entry[ROB.head].ip << dec;
+        /*--modified*/    fp_retire_rob << ", branch_t: " << +unsigned(ROB.entry[ROB.head].branch_type) << endl;}
 
         ooo_model_instr empty_entry;
         ROB.entry[ROB.head] = empty_entry;

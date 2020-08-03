@@ -6,7 +6,7 @@
 
 // CACHE ACCESS TYPE
 #define LOAD      0
-#define RFO       1
+#define RFO       1 // RFO : Read For Ownership
 #define PREFETCH  2
 #define WRITEBACK 3
 #define NUM_TYPES 4
