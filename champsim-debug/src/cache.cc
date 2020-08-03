@@ -2,7 +2,7 @@
 #include "set.h"
 
 /*--modified*/#include <fstream>
-/*--modified*/extern std::ofstream fp_handle_prefetch;
+/*--modified*/extern std::ofstream fp_handle_read;
 /*--modified*/extern std::ofstream fp_check_hit;
 
 uint64_t l2pf_access = 0;
@@ -627,6 +627,9 @@ void CACHE::handle_read()
 
                 // update prefetch stats and reset prefetch bit
                 if (block[set][way].prefetch) {
+                  /*--modified*/fp_handle_read << "[CACHE] (handle_read)";
+                  /*--modified*/fp_handle_read << " id: " << dec << RQ.entry[index].instr_id;
+                  /*--modified*/fp_handle_read << " v_addr: 0x" << hex << RQ.entry[index].ip << endl;
                     pf_useful++;
                     block[set][way].prefetch = 0;
                 }
@@ -854,13 +857,6 @@ void CACHE::handle_prefetch()
             
             if (way >= 0) { // prefetch hit
 
-                /*--modified*/if (warmup_complete[prefetch_cpu]) {
-                /*--modified*/  fp_handle_prefetch << "[" << NAME << "] " << "(" << __func__ << ")" << " prefetch hit";
-                /*--modified*/  fp_handle_prefetch << ", instr_id: " << PQ.entry[index].instr_id << ", address: " << hex << PQ.entry[index].address;
-                /*--modified*/  fp_handle_prefetch << ", full_addr: " << PQ.entry[index].full_addr << dec << ", fill_level: " << PQ.entry[index].fill_level;
-                /*--modified*/  fp_handle_prefetch << ", cycle: " << PQ.entry[index].event_cycle << endl;
-                /*--modified*/}
-
                 // update replacement policy
                 if (cache_type == IS_LLC) {
                     llc_update_replacement_state(prefetch_cpu, set, way, block[set][way].full_addr, PQ.entry[index].ip, 0, PQ.entry[index].type, 1);
@@ -925,13 +921,6 @@ void CACHE::handle_prefetch()
                 cout << " instr_id: " << PQ.entry[index].instr_id << " address: " << hex << PQ.entry[index].address;
                 cout << " full_addr: " << PQ.entry[index].full_addr << dec << " fill_level: " << PQ.entry[index].fill_level;
                 cout << " cycle: " << PQ.entry[index].event_cycle << endl; });
-
-                /*--modified*/if (warmup_complete[prefetch_cpu]) {
-                /*--modified*/  fp_handle_prefetch << "[" << NAME << "] " << "(" << __func__ << ")" << " prefetch miss";
-                /*--modified*/  fp_handle_prefetch << ", instr_id: " << PQ.entry[index].instr_id << ", address: " << hex << PQ.entry[index].address;
-                /*--modified*/  fp_handle_prefetch << ", full_addr: " << PQ.entry[index].full_addr << dec << ", fill_level: " << PQ.entry[index].fill_level;
-                /*--modified*/  fp_handle_prefetch << ", cycle: " << PQ.entry[index].event_cycle << endl;
-                /*--modified*/}
 
                 // check mshr
                 uint8_t miss_handled = 1;

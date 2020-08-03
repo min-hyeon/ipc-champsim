@@ -11,10 +11,9 @@
 
 /*--modified*/std::ofstream fp_branch_type("./debug/branch_type.debug");
 /*--modified*/std::ofstream fp_retire_rob("./debug/retire_rob.debug");
-/*--modified*/std::ofstream fp_handle_prefetch("./debug/handle_prefetch.debug");
+/*--modified*/std::ofstream fp_handle_read("./debug/handle_read.debug");
 /*--modified*/std::ofstream fp_check_hit("./debug/check_hit.debug");
-/*--modified*/std::ofstream fp_l1i_prefetcher_cache_operate("./debug/l1i_prefetcher_cache_operate.debug");
-/*--modified*/std::ofstream fp_prefetch_code_line("./debug/prefetch_code_line.debug");
+/*--modified*/std::ofstream fp_l1i_prefetch_code_line("./debug/l1i_prefetch_code_line.debug");
 
 uint8_t warmup_complete[NUM_CPUS], 
         simulation_complete[NUM_CPUS], 

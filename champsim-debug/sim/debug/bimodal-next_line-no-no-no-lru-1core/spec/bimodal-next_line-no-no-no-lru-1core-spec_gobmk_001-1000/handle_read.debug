@@ -1,0 +1,14 @@
+[CACHE] (handle_read) id: 21 v_addr: 0x409cc0
+[CACHE] (handle_read) id: 99 v_addr: 0x406040
+[CACHE] (handle_read) id: 149 v_addr: 0x406138
+[CACHE] (handle_read) id: 190 v_addr: 0x406188
+[CACHE] (handle_read) id: 210 v_addr: 0x40622c
+[CACHE] (handle_read) id: 333 v_addr: 0x408fc0
+[CACHE] (handle_read) id: 772 v_addr: 0x407618
+[CACHE] (handle_read) id: 823 v_addr: 0x4ca2f0
+[CACHE] (handle_read) id: 851 v_addr: 0x40fce8
+[CACHE] (handle_read) id: 865 v_addr: 0x497780
+[CACHE] (handle_read) id: 874 v_addr: 0x4976d0
+[CACHE] (handle_read) id: 912 v_addr: 0x415300
+[CACHE] (handle_read) id: 1137 v_addr: 0x49bd00
+[CACHE] (handle_read) id: 1186 v_addr: 0x418140

@@ -1,0 +1,7 @@
+[CACHE] (handle_read) id: 25 v_addr: 0xffff000008d590c0
+[CACHE] (handle_read) id: 59 v_addr: 0xffff000008ced900
+[CACHE] (handle_read) id: 512 v_addr: 0xffff00000844f780
+[CACHE] (handle_read) id: 521 v_addr: 0xffff00000844f600
+[CACHE] (handle_read) id: 544 v_addr: 0xffff000008464300
+[CACHE] (handle_read) id: 593 v_addr: 0xffff000008ceda40
+[CACHE] (handle_read) id: 616 v_addr: 0xffff000008467100

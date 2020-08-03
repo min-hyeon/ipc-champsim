@@ -1,0 +1,237 @@
+{
+    "warmup-instr": "100",
+    "sim-instr": "1000",
+    "num-cpu": "1",
+    "llc-set": "2048",
+    "llc-way": "16",
+    "dram":
+    {
+        "size": "4096MB",
+        "channel": "1",
+        "width": "64bit",
+        "rate": "3200MT\/s"
+    },
+    "trace": "\/home\/kimuj0103\/ipc-champsim\/champsim-debug\/traces\/client_006.champsimtrace.xz",
+    "finished":
+    {
+        "cpu0":
+        {
+            "instr": "1002",
+            "cycle": "11125",
+            "ipc-cumulative": "0.09006742"
+        }
+    },
+    "roi-stats":
+    {
+        "cpu0":
+        {
+            "ipc-cumulative": "0.09006742",
+            "instr": "1002",
+            "cycle": "11125",
+            "L1D":
+            {
+                "total":
+                {
+                    "access": "246",
+                    "hit": "174",
+                    "miss": "72"
+                },
+                "load":
+                {
+                    "access": "158",
+                    "hit": "99",
+                    "miss": "59"
+                },
+                "rfo":
+                {
+                    "access": "88",
+                    "hit": "75",
+                    "miss": "13"
+                },
+                "prefetch":
+                {
+                    "access": "0",
+                    "hit": "0",
+                    "miss": "0"
+                },
+                "wb":
+                {
+                    "access": "0",
+                    "hit": "0",
+                    "miss": "0"
+                },
+                "prefetch-state":
+                {
+                    "request": "0",
+                    "issue": "0",
+                    "useful": "0",
+                    "useless": "0"
+                },
+                "avg-miss-latency": "224.805556cycles"
+            },
+            "L1I":
+            {
+                "total":
+                {
+                    "access": "180",
+                    "hit": "79",
+                    "miss": "101"
+                },
+                "load":
+                {
+                    "access": "140",
+                    "hit": "74",
+                    "miss": "66"
+                },
+                "rfo":
+                {
+                    "access": "0",
+                    "hit": "0",
+                    "miss": "0"
+                },
+                "prefetch":
+                {
+                    "access": "40",
+                    "hit": "5",
+                    "miss": "35"
+                },
+                "wb":
+                {
+                    "access": "0",
+                    "hit": "0",
+                    "miss": "0"
+                },
+                "prefetch-state":
+                {
+                    "request": "112",
+                    "issue": "112",
+                    "useful": "26",
+                    "useless": "0"
+                },
+                "avg-miss-latency": "160.702970cycles"
+            },
+            "L2C":
+            {
+                "total":
+                {
+                    "access": "173",
+                    "hit": "0",
+                    "miss": "173"
+                },
+                "load":
+                {
+                    "access": "107",
+                    "hit": "0",
+                    "miss": "107"
+                },
+                "rfo":
+                {
+                    "access": "13",
+                    "hit": "0",
+                    "miss": "13"
+                },
+                "prefetch":
+                {
+                    "access": "53",
+                    "hit": "0",
+                    "miss": "53"
+                },
+                "wb":
+                {
+                    "access": "0",
+                    "hit": "0",
+                    "miss": "0"
+                },
+                "prefetch-state":
+                {
+                    "request": "0",
+                    "issue": "0",
+                    "useful": "0",
+                    "useless": "0"
+                },
+                "avg-miss-latency": "184.624277cycles"
+            },
+            "LLC":
+            {
+                "total":
+                {
+                    "access": "174",
+                    "hit": "0",
+                    "miss": "174"
+                },
+                "load":
+                {
+                    "access": "107",
+                    "hit": "0",
+                    "miss": "107"
+                },
+                "rfo":
+                {
+                    "access": "13",
+                    "hit": "0",
+                    "miss": "13"
+                },
+                "prefetch":
+                {
+                    "access": "54",
+                    "hit": "0",
+                    "miss": "54"
+                },
+                "wb":
+                {
+                    "access": "0",
+                    "hit": "0",
+                    "miss": "0"
+                },
+                "prefetch-state":
+                {
+                    "request": "0",
+                    "issue": "0",
+                    "useful": "0",
+                    "useless": "0"
+                },
+                "avg-miss-latency": "146.160920cycles"
+            }
+        }
+    },
+    "dram-stats":
+    {
+        "channel": "0",
+        "rq":
+        {
+            "row-buffer-hit": "81",
+            "row-buffer-miss": "92"
+        },
+        "dbus-congested": "57",
+        "wq":
+        {
+            "row-buffer-hit": "0",
+            "row-buffer-miss": "0",
+            "full": "0"
+        },
+        "avg-congested-cycle": "5"
+    },
+    "branch-prediction":
+    {
+        "cpu0":
+        {
+            "accuracy": "63.120567%",
+            "mpki": "51.8444666001994",
+            "avg-rob-occupancy-at-mispredict": "20.36538461538462"
+        }
+    },
+    "branch-type":
+    {
+        "cpu0":
+        {
+            "not-branch": "826(82.435130%)",
+            "branch-direct-jump": "22(2.195609%)",
+            "branch-indirect": "0(0.000000%)",
+            "branch-conditional": "102(10.179641%)",
+            "branch-direct-call": "8(0.798403%)",
+            "branch-indirect-call": "0(0.000000%)",
+            "return": "9(0.898204%)",
+            "branch-other": "0(0.000000%)"
+        }
+    }
+}

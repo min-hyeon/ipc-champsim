@@ -1,0 +1,16 @@
+[CACHE] (handle_read) id: 52 v_addr: 0xffff0000080f15c0
+[CACHE] (handle_read) id: 104 v_addr: 0xffff0000083d186c
+[CACHE] (handle_read) id: 186 v_addr: 0xffff000008260540
+[CACHE] (handle_read) id: 239 v_addr: 0xffff0000080ee500
+[CACHE] (handle_read) id: 302 v_addr: 0xffff0000082632cc
+[CACHE] (handle_read) id: 419 v_addr: 0xffff000008ea4140
+[CACHE] (handle_read) id: 426 v_addr: 0xffff00000826fa88
+[CACHE] (handle_read) id: 457 v_addr: 0xffff00000826fb18
+[CACHE] (handle_read) id: 472 v_addr: 0xffff000008262d40
+[CACHE] (handle_read) id: 522 v_addr: 0xffff000008262f40
+[CACHE] (handle_read) id: 576 v_addr: 0xffff00000845f880
+[CACHE] (handle_read) id: 583 v_addr: 0xffff00000826bf00
+[CACHE] (handle_read) id: 586 v_addr: 0xffff000008263018
+[CACHE] (handle_read) id: 680 v_addr: 0xffff0000082603c0
+[CACHE] (handle_read) id: 718 v_addr: 0xffff0000082b2e00
+[CACHE] (handle_read) id: 856 v_addr: 0xffff0000080ee440
