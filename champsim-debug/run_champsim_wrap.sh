@@ -24,6 +24,9 @@ EXPER_DIR=$PWD/sim/experiment
 STATS_DIR=$PWD/sim/stats
 DEBUG_DIR=$PWD/sim/debug
 
+rm -r ${STATS_DIR}
+rm -r ${DEBUG_DIR}
+
 if [ -z $PWD/sim ] || [ ! -d $PWD/sim ] ; then
 	mkdir -p $PWD/sim
 fi
@@ -132,3 +135,6 @@ do
 done
 rm -r $PWD/results_${N_SIM}
 rm -r $PWD/debug
+
+rm -r $PWD/bin
+rm -r $PWD/obj

@@ -2,8 +2,8 @@
 #include "set.h"
 
 /*--modified*/#include <fstream>
-/*--modified*/extern std::ofstream fp_handle_read;
 /*--modified*/extern std::ofstream fp_check_hit;
+/*--modified*/extern std::ofstream fp_handle_read;
 
 uint64_t l2pf_access = 0;
 

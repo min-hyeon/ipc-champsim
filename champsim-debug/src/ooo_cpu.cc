@@ -2,8 +2,8 @@
 #include "set.h"
 
 /*--modified*/#include <fstream>
-/*--modified*/extern std::ofstream fp_retire_rob;
 /*--modified*/extern std::ofstream fp_l1i_prefetch_code_line;
+/*--modified*/extern std::ofstream fp_retire_rob;
 
 // out-of-order core
 O3_CPU ooo_cpu[NUM_CPUS]; 

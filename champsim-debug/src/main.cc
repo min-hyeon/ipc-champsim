@@ -9,11 +9,10 @@
 #include "uncore.h"
 #include <fstream>
 
-/*--modified*/std::ofstream fp_branch_type("./debug/branch_type.debug");
-/*--modified*/std::ofstream fp_retire_rob("./debug/retire_rob.debug");
-/*--modified*/std::ofstream fp_handle_read("./debug/handle_read.debug");
 /*--modified*/std::ofstream fp_check_hit("./debug/check_hit.debug");
+/*--modified*/std::ofstream fp_handle_read("./debug/handle_read.debug");
 /*--modified*/std::ofstream fp_l1i_prefetch_code_line("./debug/l1i_prefetch_code_line.debug");
+/*--modified*/std::ofstream fp_retire_rob("./debug/retire_rob.debug");
 
 uint8_t warmup_complete[NUM_CPUS], 
         simulation_complete[NUM_CPUS], 
