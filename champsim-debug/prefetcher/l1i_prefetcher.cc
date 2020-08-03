@@ -10,7 +10,7 @@ void O3_CPU::l1i_prefetcher_branch_operate(uint64_t ip, uint8_t branch_type, uin
   
 }
 
-void O3_CPU::l1i_prefetcher_cache_operate(uint32_t cpu_num, uint64_t instr_id, uint64_t v_addr, uint8_t cache_hit, uint8_t prefetch_hit)
+void O3_CPU::l1i_prefetcher_cache_operate(uint64_t v_addr, uint8_t cache_hit, uint8_t prefetch_hit)
 {
 
 }
