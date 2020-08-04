@@ -9,12 +9,10 @@
 #include "uncore.h"
 #include <fstream>
 
-/*--modified*/std::ofstream fp_branch_type("./debug/branch_type.debug");
-/*--modified*/std::ofstream fp_retire_rob("./debug/retire_rob.debug");
-/*--modified*/std::ofstream fp_handle_prefetch("./debug/handle_prefetch.debug");
 /*--modified*/std::ofstream fp_check_hit("./debug/check_hit.debug");
-/*--modified*/std::ofstream fp_l1i_prefetcher_cache_operate("./debug/l1i_prefetcher_cache_operate.debug");
-/*--modified*/std::ofstream fp_prefetch_code_line("./debug/prefetch_code_line.debug");
+/*--modified*/std::ofstream fp_handle_read("./debug/handle_read.debug");
+/*--modified*/std::ofstream fp_l1i_prefetch_code_line("./debug/l1i_prefetch_code_line.debug");
+/*--modified*/std::ofstream fp_retire_rob("./debug/retire_rob.debug");
 
 uint8_t warmup_complete[NUM_CPUS], 
         simulation_complete[NUM_CPUS], 
@@ -1057,7 +1055,7 @@ int main(int argc, char** argv)
     print_branch_stats();
 #endif
 
-    /*--modified*/std::ofstream json("champsim-result.json");
+    /*--modified*/std::ofstream json("champsim-stats.json");
     /*--modified*/boost::property_tree::write_json(json, pt);
     /*--modified*/json.close();
     return 0;

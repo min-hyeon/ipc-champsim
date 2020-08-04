@@ -2,9 +2,8 @@
 #include "set.h"
 
 /*--modified*/#include <fstream>
-/*--modified*/extern std::ofstream fp_branch_type;
+/*--modified*/extern std::ofstream fp_l1i_prefetch_code_line;
 /*--modified*/extern std::ofstream fp_retire_rob;
-/*--modified*/extern std::ofstream fp_prefetch_code_line;
 
 // out-of-order core
 O3_CPU ooo_cpu[NUM_CPUS]; 
@@ -334,7 +333,6 @@ void O3_CPU::read_from_trace()
 		  }
 
 		total_branch_types[arch_instr.branch_type]++;
-        /*--modified*/fp_branch_type << "[" << "O3_CPU" << "] " << "(" << __func__ << ")" << " cpu: " << cpu << ", v_addr: " << hex << arch_instr.ip << dec << ", branch_type: " << +unsigned(arch_instr.branch_type) << endl;
 		
 		if((arch_instr.is_branch == 1) && (arch_instr.branch_taken == 1))
 		  {
@@ -397,8 +395,6 @@ void O3_CPU::read_from_trace()
             }
         }
     }
-    /*--modified*/
-    //fprintf(fp, "%u\n", num_reads);
     
     //instrs_to_fetch_this_cycle = num_reads;
 }
@@ -480,7 +476,7 @@ uint32_t O3_CPU::add_to_ifetch_buffer(ooo_model_instr *arch_instr)
   IFETCH_BUFFER.entry[index].translated = COMPLETED;
   IFETCH_BUFFER.entry[index].fetched = 0;
   // end magic
-  
+ 
   IFETCH_BUFFER.occupancy++;
   IFETCH_BUFFER.tail++;
 
@@ -600,7 +596,7 @@ void O3_CPU::fetch_instruction()
 	  else
 	    trace_packet.address = IFETCH_BUFFER.entry[index].ip >> LOG2_PAGE_SIZE;
 	  trace_packet.full_addr = IFETCH_BUFFER.entry[index].ip;
-	  trace_packet.instr_id = 0;
+	  trace_packet.instr_id = IFETCH_BUFFER.entry[index].instr_id;
 	  trace_packet.rob_index = i;
 	  trace_packet.producer = 0; // TODO: check if this guy gets used or not
 	  trace_packet.ip = IFETCH_BUFFER.entry[index].ip;
@@ -638,7 +634,7 @@ void O3_CPU::fetch_instruction()
 	  fetch_packet.address = IFETCH_BUFFER.entry[index].instruction_pa >> 6;
 	  fetch_packet.instruction_pa = IFETCH_BUFFER.entry[index].instruction_pa;
 	  fetch_packet.full_addr = IFETCH_BUFFER.entry[index].instruction_pa;
-	  fetch_packet.instr_id = 0;
+	  fetch_packet.instr_id = IFETCH_BUFFER.entry[index].instr_id;
 	  fetch_packet.rob_index = 0;
 	  fetch_packet.producer = 0;
 	  fetch_packet.ip = IFETCH_BUFFER.entry[index].ip;
@@ -814,8 +810,8 @@ int O3_CPU::prefetch_code_line(uint64_t pf_v_addr)
     }
 
     L1I.pf_requested++;
-
-    /*--modified*/fp_prefetch_code_line << "[" << "O3_CPU" << "] " << "(" << __func__ << ")" << " cpu: " << cpu << ", pf_v_addr: " << hex << pf_v_addr << dec;
+    /*--modified*/fp_l1i_prefetch_code_line << "[O3_CPU] (prefetch_code_line)";
+    /*--modified*/fp_l1i_prefetch_code_line << " pf_v_addr: " << hex << pf_v_addr << endl;
 
     if (L1I.PQ.occupancy < L1I.PQ.SIZE)
     {
@@ -840,28 +836,8 @@ int O3_CPU::prefetch_code_line(uint64_t pf_v_addr)
         L1I.add_pq(&pf_packet);    
         L1I.pf_issued++;
 
-        /*--modified*/fp_prefetch_code_line << ", requested-and-issued: L1I.PQ.occupancy < L1I.PQ.SIZE";
-        /*--modified*/fp_prefetch_code_line << ", pf_pa: " << pf_pa;
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.address: " << pf_packet.address;
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.full_addr: " << "=pf_pa";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.ip: " << "=pf_v_addr";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.event_cycle: " << pf_packet.event_cycle;
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_requested: " << L1I.pf_requested;
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_issued: " << L1I.pf_issued << endl;
-
         return 1;
     }
-    /*--modified*/else {
-        /*--modified*/uint64_t pf_pa = (va_to_pa(cpu, 0, pf_v_addr, pf_v_addr>>LOG2_PAGE_SIZE, 1) & (~((1 << LOG2_PAGE_SIZE) - 1))) | (pf_v_addr & ((1 << LOG2_PAGE_SIZE) - 1));
-        /*--modified*/fp_prefetch_code_line << ", requested-but-not-issued: L1I.PQ.occupancy >= L1I.PQ.SIZE";
-        /*--modified*/fp_prefetch_code_line << ", pf_pa: " << pf_pa;
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.address: " << (pf_pa >> LOG2_BLOCK_SIZE);
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.full_addr: " << "=pf_pa";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.ip: " << "=pf_v_addr";
-        /*--modified*/fp_prefetch_code_line << ", pf_packet.event_cycle: " << current_core_cycle[cpu];
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_requested: " << L1I.pf_requested;
-        /*--modified*/fp_prefetch_code_line << ", L1I.pf_issued: " << L1I.pf_issued << endl;
-    /*--modified*/}
   
     return 0;
 }
@@ -2330,11 +2306,9 @@ void O3_CPU::retire_rob()
         cout << "[ROB] " << __func__ << " instr_id: " << ROB.entry[ROB.head].instr_id << " is retired" << endl; });
 
         /*--modified*/if (warmup_complete[cpu]) {
-        /*--modified*/    fp_retire_rob << "[ROB] (retired)" << " cpu: " << cpu << ", instruction_id: " << ROB.entry[ROB.head].instr_id;
-        /*--modified*/    fp_retire_rob << ", ip: " << hex << ROB.entry[ROB.head].ip << dec;
-        /*--modified*/    fp_retire_rob << ", head: " << ROB.head << ", tail: " << ROB.tail << ", occupancy: " << ROB.occupancy;
-        /*--modified*/    fp_retire_rob << ", event: " << ROB.entry[ROB.head].event_cycle << ", current: " << current_core_cycle[cpu] << endl;
-        /*--modified*/}
+        /*--modified*/    fp_retire_rob << "[ROB] (retire_rob) id: " << ROB.entry[ROB.head].instr_id;
+        /*--modified*/    fp_retire_rob << ", v_addr: 0x" << hex << ROB.entry[ROB.head].ip << dec;
+        /*--modified*/    fp_retire_rob << ", branch_t: " << +unsigned(ROB.entry[ROB.head].branch_type) << endl;}
 
         ooo_model_instr empty_entry;
         ROB.entry[ROB.head] = empty_entry;

@@ -2,8 +2,8 @@
 #include "set.h"
 
 /*--modified*/#include <fstream>
-/*--modified*/extern std::ofstream fp_handle_prefetch;
 /*--modified*/extern std::ofstream fp_check_hit;
+/*--modified*/extern std::ofstream fp_handle_read;
 
 uint64_t l2pf_access = 0;
 
@@ -45,6 +45,10 @@ void CACHE::handle_fill()
             // COLLECT STATS
             sim_miss[fill_cpu][MSHR.entry[mshr_index].type]++;
             sim_access[fill_cpu][MSHR.entry[mshr_index].type]++;
+            /*--modified*/    if(warmup_complete[fill_cpu]&&cache_type == IS_L1I) 
+            /*--modified*/    {fp_check_hit << "[L1I] (check_hit) id: " << MSHR.entry[mshr_index].instr_id;
+            /*--modified*/     fp_check_hit << ", v_addr: 0x" << hex << MSHR.entry[mshr_index].ip<< dec;
+            /*--modified*/     fp_check_hit << ", cache_hit: 0" << endl;}
 
             // check fill level
             if (MSHR.entry[mshr_index].fill_level < fill_level) {
@@ -111,7 +115,7 @@ void CACHE::handle_fill()
                     writeback_packet.address = block[set][way].address;
                     writeback_packet.full_addr = block[set][way].full_addr;
                     writeback_packet.data = block[set][way].data;
-                    writeback_packet.instr_id = MSHR.entry[mshr_index].instr_id;
+                    writeback_packet.instr_id = block[set][way].instr_id;
                     writeback_packet.ip = 0; // writeback does not have ip
                     writeback_packet.type = WRITEBACK;
                     writeback_packet.event_cycle = current_core_cycle[fill_cpu];
@@ -158,6 +162,11 @@ void CACHE::handle_fill()
             sim_access[fill_cpu][MSHR.entry[mshr_index].type]++;
 
             fill_cache(set, way, &MSHR.entry[mshr_index]);
+
+            /*--modified*/    if(warmup_complete[fill_cpu]&&cache_type == IS_L1I) 
+            /*--modified*/    {fp_check_hit << "[L1I] (check_hit) id: " << MSHR.entry[mshr_index].instr_id;
+            /*--modified*/     fp_check_hit << ", v_addr: 0x" << hex << MSHR.entry[mshr_index].ip<< dec;
+            /*--modified*/     fp_check_hit << ", cache_hit: 0" << endl;}
 
             // RFO marks cache line dirty
             if (cache_type == IS_L1D) {
@@ -256,6 +265,10 @@ void CACHE::handle_writeback()
             // COLLECT STATS
             sim_hit[writeback_cpu][WQ.entry[index].type]++;
             sim_access[writeback_cpu][WQ.entry[index].type]++;
+            /*--modified*/    if(warmup_complete[writeback_cpu]&&cache_type == IS_L1I) 
+            /*--modified*/    {fp_check_hit << "[L1I] (check_hit) id: " << RQ.entry[index].instr_id;
+            /*--modified*/     fp_check_hit << ", v_addr: 0x" << hex << RQ.entry[index].ip<< dec;
+            /*--modified*/     fp_check_hit << ", cache_hit: 1" << endl;}
 
             // mark dirty
             block[set][way].dirty = 1;
@@ -441,7 +454,7 @@ void CACHE::handle_writeback()
                             writeback_packet.address = block[set][way].address;
                             writeback_packet.full_addr = block[set][way].full_addr;
                             writeback_packet.data = block[set][way].data;
-                            writeback_packet.instr_id = WQ.entry[index].instr_id;
+                            writeback_packet.instr_id = block[set][way].instr_id;
                             writeback_packet.ip = 0;
                             writeback_packet.type = WRITEBACK;
                             writeback_packet.event_cycle = current_core_cycle[writeback_cpu];
@@ -487,6 +500,11 @@ void CACHE::handle_writeback()
                     sim_access[writeback_cpu][WQ.entry[index].type]++;
 
                     fill_cache(set, way, &WQ.entry[index]);
+
+                    /*--modified*/    if(warmup_complete[writeback_cpu]&&cache_type == IS_L1I) 
+                    /*--modified*/    {fp_check_hit << "[L1I] (writeback_check_hit) id: " << WQ.entry[index].instr_id;
+                    /*--modified*/     fp_check_hit << ", v_addr: 0x" << hex << WQ.entry[index].ip<< dec;
+                    /*--modified*/     fp_check_hit << ", cache_hit: 0" << endl;}
 
                     // mark dirty
                     block[set][way].dirty = 1; 
@@ -598,6 +616,10 @@ void CACHE::handle_read()
                 // COLLECT STATS
                 sim_hit[read_cpu][RQ.entry[index].type]++;
                 sim_access[read_cpu][RQ.entry[index].type]++;
+                /*--modified*/    if(warmup_complete[read_cpu]&&cache_type == IS_L1I) 
+                /*--modified*/    {fp_check_hit << "[L1I] (check_hit) id: " << RQ.entry[index].instr_id;
+                /*--modified*/     fp_check_hit << ", v_addr: 0x" << hex << RQ.entry[index].ip<< dec;
+                /*--modified*/     fp_check_hit << ", cache_hit: 1" << endl;}
 
                 // check fill level
                 if (RQ.entry[index].fill_level < fill_level) {
@@ -624,6 +646,9 @@ void CACHE::handle_read()
 
                 // update prefetch stats and reset prefetch bit
                 if (block[set][way].prefetch) {
+                  /*--modified*/fp_handle_read << "[CACHE] (handle_read)";
+                  /*--modified*/fp_handle_read << " id: " << dec << RQ.entry[index].instr_id;
+                  /*--modified*/fp_handle_read << " v_addr: 0x" << hex << RQ.entry[index].ip << endl;
                     pf_useful++;
                     block[set][way].prefetch = 0;
                 }
@@ -643,7 +668,6 @@ void CACHE::handle_read()
                 cout << " instr_id: " << RQ.entry[index].instr_id << " address: " << hex << RQ.entry[index].address;
                 cout << " full_addr: " << RQ.entry[index].full_addr << dec;
                 cout << " cycle: " << RQ.entry[index].event_cycle << endl; });
-
                 // check mshr
                 uint8_t miss_handled = 1;
                 int mshr_index = check_mshr(&RQ.entry[index]);
@@ -852,13 +876,6 @@ void CACHE::handle_prefetch()
             
             if (way >= 0) { // prefetch hit
 
-                /*--modified*/if (warmup_complete[prefetch_cpu]) {
-                /*--modified*/  fp_handle_prefetch << "[" << NAME << "] " << "(" << __func__ << ")" << " prefetch hit";
-                /*--modified*/  fp_handle_prefetch << ", instr_id: " << PQ.entry[index].instr_id << ", address: " << hex << PQ.entry[index].address;
-                /*--modified*/  fp_handle_prefetch << ", full_addr: " << PQ.entry[index].full_addr << dec << ", fill_level: " << PQ.entry[index].fill_level;
-                /*--modified*/  fp_handle_prefetch << ", cycle: " << PQ.entry[index].event_cycle << endl;
-                /*--modified*/}
-
                 // update replacement policy
                 if (cache_type == IS_LLC) {
                     llc_update_replacement_state(prefetch_cpu, set, way, block[set][way].full_addr, PQ.entry[index].ip, 0, PQ.entry[index].type, 1);
@@ -870,6 +887,11 @@ void CACHE::handle_prefetch()
                 // COLLECT STATS
                 sim_hit[prefetch_cpu][PQ.entry[index].type]++;
                 sim_access[prefetch_cpu][PQ.entry[index].type]++;
+                /*--modified*/    if(warmup_complete[prefetch_cpu]&&cache_type == IS_L1I) 
+                /*--modified*/    {fp_check_hit << "[L1I] (check_hit) id: " << PQ.entry[index].instr_id;
+                /*--modified*/     fp_check_hit << ", v_addr: 0x" << hex << PQ.entry[index].ip<< dec;
+                /*--modified*/     fp_check_hit << ", cache_hit: 1" << endl;}
+                
 
 		// run prefetcher on prefetches from higher caches
 		if(PQ.entry[index].pf_origin_level < fill_level)
@@ -923,13 +945,6 @@ void CACHE::handle_prefetch()
                 cout << " instr_id: " << PQ.entry[index].instr_id << " address: " << hex << PQ.entry[index].address;
                 cout << " full_addr: " << PQ.entry[index].full_addr << dec << " fill_level: " << PQ.entry[index].fill_level;
                 cout << " cycle: " << PQ.entry[index].event_cycle << endl; });
-
-                /*--modified*/if (warmup_complete[prefetch_cpu]) {
-                /*--modified*/  fp_handle_prefetch << "[" << NAME << "] " << "(" << __func__ << ")" << " prefetch miss";
-                /*--modified*/  fp_handle_prefetch << ", instr_id: " << PQ.entry[index].instr_id << ", address: " << hex << PQ.entry[index].address;
-                /*--modified*/  fp_handle_prefetch << ", full_addr: " << PQ.entry[index].full_addr << dec << ", fill_level: " << PQ.entry[index].fill_level;
-                /*--modified*/  fp_handle_prefetch << ", cycle: " << PQ.entry[index].event_cycle << endl;
-                /*--modified*/}
 
                 // check mshr
                 uint8_t miss_handled = 1;
@@ -1167,13 +1182,6 @@ int CACHE::check_hit(PACKET *packet)
             break;
         }
     }
-
-    /*--modified*/if (warmup_complete[packet->cpu]) {
-    /*--modified*/  fp_check_hit << "[" << NAME << "] " << "(" << __func__ << ")" << " match_way: " << match_way << ", instr_id: " << packet->instr_id << ", type: " << +unsigned(packet->type) << hex << ", addr: " << packet->address;
-    /*--modified*/  fp_check_hit << ", full_addr: " << packet->full_addr << dec;
-    /*--modified*/  fp_check_hit << ", event: " << packet->event_cycle << ", cycle: " << current_core_cycle[cpu] << endl;
-    /*--modified*/}
-
     return match_way;
 }
 
